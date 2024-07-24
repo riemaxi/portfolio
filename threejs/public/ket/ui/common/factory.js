@@ -10,6 +10,7 @@ export default class Factory{
         let object = new THREE.IcosahedronGeometry(size, detail)
         let material = data.standard ? new THREE.MeshStandardMaterial(data.material) : new THREE.MeshBasicMaterial(data.material)
         let mesh = new THREE.Mesh(object, material)
+        mesh.scale.setScalar(data.scale)
     
         return mesh
     }    

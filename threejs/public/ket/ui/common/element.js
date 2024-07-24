@@ -16,6 +16,10 @@ export default class  Element extends HTMLElement{
         return { width: r.width, height: r.height}
     }
 
+    get aspect(){
+        return this.size.width / this.size.height
+    }
+
     control(){ 
         window.ondeviceorientation = () => this.onResize(this.size)
         window.onresize = () => this.onResize(this.size)

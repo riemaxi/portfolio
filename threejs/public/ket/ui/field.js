@@ -14,50 +14,64 @@ const content = `
 </div>
 `
 
-let setting = {
-    size: {
-        width: window.innerWidth, 
-        height: window.innerHeight
-    },
-    camera: {
-        setting: {
-            fov: 75,
-            aspect: window.innerWidth / window.innerHeight,
-            near: .1, 
-            far: 10
-        },
-        position: {x: 0, y: 0, z: 7}
-    }
-}
 
 let factory = new Factory()
+let time = 0
 
-let stage = new class extends Stage{
-    constructor(){
+class XStage extends Stage{
+    constructor(setting, scale){
         super(setting)
 
-        this.addObject(this.mesh = factory.createIcosahedron({setting: {size: 1.0, detail: 2}, standard: true, material: {color: '#FFAA00', flatShading: true}}))
+        this.addObject(this.mesh = factory.createIcosahedron({setting: {size: 1.0, detail: 2}, standard: true, material: {color: '#FFAA00', flatShading: true}, scale }))
         this.addLight(factory.createHemisphereLight(0xffffff,0x000000))
     }
 
+    render(t){
+        time = t
+        super.render(t)
+    }
+
     transform(t){
-        //this.mesh.scale.setScalar(Math.cos(t * .001) + 1.0 )
+        this.mesh.scale.setScalar(4 * Math.cos(t * .001) )
     }
 }
 
-
+let stage = null
 
 export default class Field extends Element{
     constructor(){
         super(content)
-
-        this.shadow.appendChild(stage.element)
-
-        stage.render()
     }
 
     control(){
         super.control()
+    }
+
+    initialize(){
+        stage && stage.element.remove()
+
+        let setting = {
+            size: this.size,
+            camera: {
+                setting: {
+                    fov: 75,
+                    aspect: this.aspect,
+                    near: .1, 
+                    far: 10
+                },
+                position: {x: 0, y: 0, z: 7}
+            }
+        }
+
+        stage = new XStage(setting, 4 * Math.cos(time * .001))
+
+        this.shadow.appendChild(stage.element)
+
+        stage.render(time)        
+    }
+
+    onResize(){
+        this.initialize()
     }
 }
 
